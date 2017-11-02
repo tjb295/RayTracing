@@ -289,7 +289,7 @@ int render(int n, int m, OBJECT_LIST_STR *list, char* output)
 	}
 
 	writeToP3(pixmap, n, m, output);
-	printf("Complete \n");
+	printf("\nComplete \n");
 	return 0;
 
 }
