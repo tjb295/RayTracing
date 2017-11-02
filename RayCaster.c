@@ -92,10 +92,6 @@ RAY_OUTPUT plane_intersect(OBJECT_STR object, V3 Rd, V3 R0)
 	return to_return;
 }
 
-void camerawork()
-{
-
-}
 
 void writeToP3(Pixel* pixmap, int pixwidth, int pixheight, char* output)
 {
@@ -175,6 +171,8 @@ V3 raycast(V3 Rd, V3 R0, OBJECT_LIST_STR *list)
 	double last_t;
 	double t ;
 	double closest_t;
+	RAY_OUTPUT last;
+	RAY_OUTPUT curr;
 	V3 to_return;
 	V3 closest_color = v3_assign(1,0.9,0);;
 
@@ -186,46 +184,38 @@ V3 raycast(V3 Rd, V3 R0, OBJECT_LIST_STR *list)
 		{
 			//perform intersection test
 			//printf("Sphere! \n");
-			t = sphere_intersect(list[0].listOfObjects[i], Rd, R0);
+			curr = sphere_intersect(list[0].listOfObjects[i], Rd, R0);
 		}	
 		//check for plane
 		else if(strcmp(list[0].listOfObjects[i].objectName, "plane") == 0) 
 		{
 			//perform intersection test
 			//printf("plane! \n");
-			t = plane_intersect(list[0].listOfObjects[i], Rd, R0);
+			curr = plane_intersect(list[0].listOfObjects[i], Rd, R0);
 			// if(t != NULL)
 			// {
 			// 	printf("%lf z pos of plane is \n", t[2]);
 			// }
 		}
-		//check for a camera object
-		else if(strcmp(list[0].listOfObjects[i].objectName, "camera") == 0)
-		{
-			//actually have no clue what to do with the camera lol
-			//printf("Camera! \n");
-			camerawork();
-			continue;
-		}
 	
 		if(i == 0)
 		{
 			closest_color = v3_assign(list[0].listOfObjects[i].properties[0].data[0],list[0].listOfObjects[i].properties[0].data[1],list[0].listOfObjects[i].properties[0].data[2]);
-			last_t = t;
+			last = curr;
 		}
-		else if(t < last_t)
+		else if(curr.t < last.t)
 		{
 			closest_color = v3_assign(list[0].listOfObjects[i].properties[0].data[0],list[0].listOfObjects[i].properties[0].data[1],list[0].listOfObjects[i].properties[0].data[2]);
-			last_t = t;
+			last = curr;
 		}
 		else
 		{
-			last_t = t;
+			last = curr;
 		}
 		
 	}
 
-	if(last_t == INFINITY)
+	if(last.t == INFINITY)
 	{
 		//return background color if no hits
 		
@@ -246,7 +236,6 @@ int render(int n, int m, OBJECT_LIST_STR *list, char* output)
 	{
 		if(strcmp(list[0].listOfObjects[k].objectName, "camera") == 0)
 		{
-			printf("We have a camera at %d \n", k);
 			width = list[0].listOfObjects[k].properties[0].data[0];
 			height = list[0].listOfObjects[k].properties[1].data[0];
 		}
