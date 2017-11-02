@@ -5,9 +5,10 @@
 #include "RayCaster.h"
 #include "3dMathLib/3dmath.h"
 
-double sphere_intersect(OBJECT_STR object, V3 Rd, V3 R0)
+RAY_OUTPUT sphere_intersect(OBJECT_STR object, V3 Rd, V3 R0)
 {
 	double intersect;
+	RAY_OUTPUT to_return;
 	V3 t = malloc(sizeof(double ) * 3);
 	double x,y,z;
 
@@ -47,22 +48,26 @@ double sphere_intersect(OBJECT_STR object, V3 Rd, V3 R0)
 		x = (R0[0] + (intersect*Rd[0]));
 		y = (R0[1] + (intersect*Rd[1]));
 		z = (R0[2] + (intersect*Rd[2]));
-		//printf("Hit on sphere! \n");
+		
+		//assign intersection and t to struct to return
+		to_return.intersection = v3_assign(x,y,z);
+		to_return.t - intersect;
 		//create the point to be returned
 		
 
-		return intersect;
+		return to_return;
 	}
 
 }
 
-double plane_intersect(OBJECT_STR object, V3 Rd, V3 R0)
+RAY_OUTPUT plane_intersect(OBJECT_STR object, V3 Rd, V3 R0)
 {
 	//begin plane intersection test!
 	//store variables such as the normal
 	V3 normal = v3_assign(object.properties[2].data[0],object.properties[2].data[1],object.properties[2].data[2]);
 	V3 p_pos  = v3_assign(object.properties[1].data[0],object.properties[1].data[1],object.properties[1].data[2]);
 	V3 sub_v = malloc(sizeof(double) * 3);
+	RAY_OUTPUT to_return;
 
 	v3_subtract(sub_v, R0, p_pos);
 	double top = v3_dot(sub_v, normal);
@@ -72,15 +77,19 @@ double plane_intersect(OBJECT_STR object, V3 Rd, V3 R0)
 	//printf("bottom: %lf \n", bottom);
 	if(bottom == 0)
 	{
-		return INFINITY;
+		to_return.t = INFINITY;
+		return to_return;
 	}
 
 	double t = top/bottom;
 	if(t > 0 )
 	{
-		return t;
+		to_return.t = t;
+		return to_return;
 	}
-	return INFINITY;
+
+	to_return.t = INFINITY;
+	return to_return;
 }
 
 void camerawork()
