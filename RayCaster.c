@@ -39,7 +39,8 @@ RAY_OUTPUT sphere_intersect(OBJECT_STR object, V3 Rd, V3 R0)
 		//set to background
 		//heee
 		intersect = INFINITY;
-		return intersect;
+		to_return.t = intersect;
+		return to_return;
 	}
 	else
 	{
@@ -72,7 +73,7 @@ RAY_OUTPUT plane_intersect(OBJECT_STR object, V3 Rd, V3 R0)
 	v3_subtract(sub_v, R0, p_pos);
 	double top = v3_dot(sub_v, normal);
 	double bottom = v3_dot(Rd, normal);
-	
+
 	if(bottom == 0)
 	{
 		to_return.t = INFINITY;
@@ -93,7 +94,9 @@ RAY_OUTPUT plane_intersect(OBJECT_STR object, V3 Rd, V3 R0)
 //function to return an intersection test for light ray, used for calulcating light forces
 V3 raycast_primitive(V3 ro2, V3 rd2)
 {
+	V3 intersection = malloc(sizeof(double) * 3);
 
+	return intersection;
 }
 
 void writeToP3(Pixel* pixmap, int pixwidth, int pixheight, char* output)
@@ -230,7 +233,8 @@ V3 raycast(V3 Rd, V3 R0, OBJECT_LIST_STR *list)
 
 	//assign variables to handle vector ops
 	V3 final_color = v3_assign(0,0,0);
-	V3 light_pos = malloc(sizeof(double) * 3);
+	V3 light_pos;
+	V3 rd2 = malloc(sizeof(double) * 6);
 
 	//For loop to go over all the lights
 	for(int i = 0; i < list[0].numObjects; i += 0)
@@ -239,11 +243,12 @@ V3 raycast(V3 Rd, V3 R0, OBJECT_LIST_STR *list)
 		{
 			//Assign lights to object
 			OBJECT_STR l = list[0].listOfObjects[i];
-			light_pos = l.
+			//assign light position
+			light_pos = v3_assign(l.properties[5].data[0], l.properties[5].data[1], l.properties[5].data[2]);
 
 			//assign the necessary variables
 			V3 ro2 = closest_intersect.intersection;
-			V3 rd2 = v3_subtract()
+			v3_subtract()
 
 			V3 hit = raycast_primitive(ro2, rd2);
 		}

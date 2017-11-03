@@ -1,4 +1,5 @@
-
+#ifndef _3DMATH_H
+#define _3DMATH_H
 typedef double* V3;
 
 static inline void v3_add(V3 c, V3 a, V3 b)
@@ -47,3 +48,5 @@ V3 v3_assign(double a, double b, double c)
 
 	return vector;
 }
+
+#endif /*_3DMATH_H */
