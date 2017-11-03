@@ -222,6 +222,21 @@ V3 raycast(V3 Rd, V3 R0, OBJECT_LIST_STR *list)
 		return closest_color;
 	}
 
+	V3 final_color = v3_assign(0,0,0);
+
+	//For loop to go over all the lights
+	for(int i = 0; i < list[0].numObjects; i += 0)
+	{
+		if(strcmp(list[0].listOfObjects[i].objectName, "light") == 0)
+		{
+			//Assign lights to object
+			OBJECT_STR l = list[0].listOfObjects[i];
+
+			//assign the necessary variables
+		}
+		
+	}
+
 	return closest_color;
 }
 
