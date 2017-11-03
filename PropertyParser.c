@@ -14,7 +14,8 @@
 
 OBJECT_STR *getPropertyValues(OBJECT_STR *_object, char *_result);
 
-OBJECT_LIST_STR *getProperties(char *_filename) {
+OBJECT_LIST_STR *getProperties(char *_filename) 
+{
 
     // char *regPattern[] = {"[\\s]*[a-zA-z]+:[\\s]*\\[[0-9,\\.\\s]+]", "[\\s]*[a-zA-z]+:[\\s]*[0-9\\.]+"};
     char *regPattern = "[a-zA-z]+:[ ]*\\[[-0-9,\\. ]+]|[a-zA-z]+:[ ]*[-0-9\\.]+";
@@ -23,12 +24,14 @@ OBJECT_LIST_STR *getProperties(char *_filename) {
     regmatch_t match;
 
 
-    if (_filename == NULL || strlen(_filename) == 0) {
+    if (_filename == NULL || strlen(_filename) == 0) 
+    {
         fprintf(stderr, "Filename not given\n");
         return NULL;
     }
     FILE *fp = fopen(_filename, "r");
-    if (fp == NULL) {
+    if (fp == NULL) 
+    {
         perror(_filename);
         return NULL;
     }
@@ -37,7 +40,8 @@ OBJECT_LIST_STR *getProperties(char *_filename) {
     int j = 0;
 
     status = regcomp(&regexComp, regPattern, REG_EXTENDED);
-    if (status) {
+    if (status) 
+    {
         fprintf(stderr, "Unable to compile regular expression: %s\n", regPattern);
         return NULL;
     }
@@ -53,19 +57,23 @@ OBJECT_LIST_STR *getProperties(char *_filename) {
     int resultLen = 0;
     unsigned int offset = 0;
     char errorBuff[BUFSIZ + 1];
-    while ((read = getline(&buffer, &len, fp)) != -1) {
+    while ((read = getline(&buffer, &len, fp)) != -1) 
+    {
         ptr = strchr(buffer, '\n');
-        if (ptr != NULL) {
+        if (ptr != NULL) 
+        {
             *ptr = 0;
         }
         // First token in the object Name
         ptr = strchr(buffer, ',');
-        if (ptr == NULL) {
+        if (ptr == NULL) 
+        {
             continue;
         }
         *ptr++ = 0; // Change the , to a zero and bump the pointer up one byte
         // Only allocate the list once - but only when we have a valid entry
-        if (list == NULL) {
+        if (list == NULL) 
+        {
             list = calloc(sizeof (OBJECT_LIST_STR), 1);
             assert(list);
         }
@@ -80,12 +88,15 @@ OBJECT_LIST_STR *getProperties(char *_filename) {
         char *next = ptr;
 
 
-        for (j = 0; j < MAX_MATCH; j++) {
+        for (j = 0; j < MAX_MATCH; j++) 
+        {
             status = regexec(&regexComp, next, 1, &match, 0);
 
-            if (!status) {
+            if (!status) 
+            {
                 // We have a bunch of tuple patterns (properties)
-                if (match.rm_so != -1) {
+                if (match.rm_so != -1) 
+                {
                     resultLen = match.rm_eo - match.rm_so;
                     memcpy(result, next + match.rm_so, resultLen);
                     result[resultLen] = 0;
@@ -95,8 +106,10 @@ OBJECT_LIST_STR *getProperties(char *_filename) {
 
                 }
 
-            } else {
-                if (status != REG_NOMATCH) {
+            } else 
+            {
+                if (status != REG_NOMATCH) 
+                {
                     regerror(status, &regexComp, errorBuff, BUFSIZ);
                     printf("regcomp: %s\n", errorBuff);
                 }
@@ -119,17 +132,21 @@ OBJECT_LIST_STR *getProperties(char *_filename) {
 
 }
 
-void cleanUpObjectList(OBJECT_LIST_STR * _objectList) {
+void cleanUpObjectList(OBJECT_LIST_STR * _objectList) 
+{
 
-    if (_objectList == NULL) {
+    if (_objectList == NULL) 
+    {
         return;
     }
 
     OBJECT_STR *obj = NULL;
     PROPERTY_STR *prop = NULL;
-    for (int i = _objectList->numObjects - 1; i >= 0; i--) {
+    for (int i = _objectList->numObjects - 1; i >= 0; i--) 
+    {
         obj = &_objectList->listOfObjects[i];
-        for (int j = obj->numProperties - 1; j >= 0; j--) {
+        for (int j = obj->numProperties - 1; j >= 0; j--) 
+        {
             prop = &obj->properties[j];
             free(prop->data);
         }
@@ -140,11 +157,13 @@ void cleanUpObjectList(OBJECT_LIST_STR * _objectList) {
 
 }
 
-OBJECT_STR * getPropertyValues(OBJECT_STR *_object, char *_result) {
+OBJECT_STR * getPropertyValues(OBJECT_STR *_object, char *_result) 
+{
 
     // So we have a tuple property 
     char *ptr = strchr(_result, ':');
-    if (ptr == NULL) {
+    if (ptr == NULL) 
+    {
         return _object;
     }
     // Zero out and advance
@@ -160,8 +179,10 @@ OBJECT_STR * getPropertyValues(OBJECT_STR *_object, char *_result) {
     char *delim = "[], ";
     char *num = strtok(ptr, delim); // parse up  by the brackets  any spaces and or commas
     double value = 0.0;
-    while (num != NULL) {
-        if (isdigit(num[0]) || (num[0] == '-' && isdigit(num[1]))) {
+    while (num != NULL) 
+    {
+        if (isdigit(num[0]) || (num[0] == '-' && isdigit(num[1]))) 
+        {
             value = atof(num);
             prop->data = (double *) realloc(prop->data, sizeof (double) * (1 + prop->numValues));
             assert(prop->data);
