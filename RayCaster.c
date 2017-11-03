@@ -92,6 +92,11 @@ RAY_OUTPUT plane_intersect(OBJECT_STR object, V3 Rd, V3 R0)
 	return to_return;
 }
 
+//function to return an intersection test for light ray, used for calulcating light forces
+V3 raycast_primitive(V3 ro2, V3 rd2)
+{
+
+}
 
 void writeToP3(Pixel* pixmap, int pixwidth, int pixheight, char* output)
 {
@@ -242,7 +247,7 @@ V3 raycast(V3 Rd, V3 R0, OBJECT_LIST_STR *list)
 			V3 ro2 = closest_intersect.intersection;
 			V3 rd2 = v3_subtract()
 
-			V3 hit = raycast_primitive(r02, rd2);
+			V3 hit = raycast_primitive(ro2, rd2);
 		}
 		
 	}
