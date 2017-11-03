@@ -13,7 +13,7 @@ RAY_OUTPUT sphere_intersect(OBJECT_STR object, V3 Rd, V3 R0)
 	double x,y,z;
 
 	//define variables from Spheres data
-	V3 s_pos = v3_assign(object.properties[1].data[0], object.properties[1].data[1], object.properties[1].data[2]);
+	V3 s_pos = v3_assign(object.properties[3].data[0], object.properties[3].data[1], object.properties[3].data[2]);
 
 	double r = object.properties[2].data[0];
 	double r_sqr = r * r;
@@ -64,17 +64,15 @@ RAY_OUTPUT plane_intersect(OBJECT_STR object, V3 Rd, V3 R0)
 {
 	//begin plane intersection test!
 	//store variables such as the normal
-	V3 normal = v3_assign(object.properties[2].data[0],object.properties[2].data[1],object.properties[2].data[2]);
-	V3 p_pos  = v3_assign(object.properties[1].data[0],object.properties[1].data[1],object.properties[1].data[2]);
+	V3 normal = v3_assign(object.properties[0].data[0],object.properties[0].data[1],object.properties[0].data[2]);
+	V3 p_pos  = v3_assign(object.properties[2].data[0],object.properties[2].data[1],object.properties[2].data[2]);
 	V3 sub_v = malloc(sizeof(double) * 3);
 	RAY_OUTPUT to_return;
 
 	v3_subtract(sub_v, R0, p_pos);
 	double top = v3_dot(sub_v, normal);
-	//printf("top: %lf, \n", top);
-
 	double bottom = v3_dot(Rd, normal);
-	//printf("bottom: %lf \n", bottom);
+	
 	if(bottom == 0)
 	{
 		to_return.t = INFINITY;
