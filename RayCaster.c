@@ -181,11 +181,12 @@ V3 raycast(V3 Rd, V3 R0, OBJECT_LIST_STR *list)
 	RAY_OUTPUT curr;
 	RAY_OUTPUT closest_intersect;
 	V3 to_return;
-	V3 closest_color = v3_assign(1,0.9,0);;
+	V3 closest_color = v3_assign(1,0.9,0);
 
 	//handle each object based on the type it is
 	for(int i = 0; i < list[0].numObjects; i += 1)
 	{
+		printf("1: %lf 2: %lf, 3: %lf \n", list[0].listOfObjects[i].properties[0].data[0], list[0].listOfObjects[i].properties[0].data[1], list[0].listOfObjects[i].properties[0].data[2]);
 		//check for sphere object
 		if(strcmp(list[0].listOfObjects[i].objectName, "sphere") == 0)
 		{
@@ -207,7 +208,7 @@ V3 raycast(V3 Rd, V3 R0, OBJECT_LIST_STR *list)
 	
 		if(i == 0)
 		{
-			closest_color = v3_assign(list[0].listOfObjects[i].properties[0].data[0],list[0].listOfObjects[i].properties[0].data[1],list[0].listOfObjects[i].properties[0].data[2]);
+			closest_color = v3_assign(list[0].listOfObjects[i].properties[0].data[0], list[0].listOfObjects[i].properties[0].data[1], list[0].listOfObjects[i].properties[0].data[2]);
 			closest_intersect = curr;
 			last = curr;
 		}
@@ -232,7 +233,7 @@ V3 raycast(V3 Rd, V3 R0, OBJECT_LIST_STR *list)
 	}
 
 	//assign variables to handle vector ops
-	V3 final_color = v3_assign(0,0,0);
+	//V3 final_color = v3_assign(0,0,0);
 	V3 light_pos;
 	V3 rd2 = malloc(sizeof(double) * 6);
 
@@ -244,11 +245,11 @@ V3 raycast(V3 Rd, V3 R0, OBJECT_LIST_STR *list)
 			//Assign lights to object
 			OBJECT_STR l = list[0].listOfObjects[i];
 			//assign light position
-			light_pos = v3_assign(l.properties[5].data[0], l.properties[5].data[1], l.properties[5].data[2]);
+			//light_pos = v3_assign(l.properties[5].data[0], l.properties[5].data[1], l.properties[5].data[2]);
 
 			//assign the necessary variables
 			V3 ro2 = closest_intersect.intersection;
-			v3_subtract()
+			v3_subtract(rd2, light_pos, ro2);
 
 			V3 hit = raycast_primitive(ro2, rd2);
 		}
@@ -284,9 +285,11 @@ int render(int n, int m, OBJECT_LIST_STR *list, char* output)
 
 	// buffers for vector mathematics
 	double buff_height, buff_width;
+
 	//ratios for p x mm
 	double pixheight = height/m;
 	double pixwidth = width/n;
+
 	//allocate area for pixmap to be written onto
 	Pixel* pixmap = malloc(sizeof(Pixel) * m * n);
 

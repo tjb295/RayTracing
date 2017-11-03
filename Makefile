@@ -38,6 +38,6 @@ $(PROGRAMS) : $(OBJECTS)
 
 
 clean:
-	rm *o
+	rm -f *.o
 	rm -rf SunWS_cache
-	CCadmin -clean=all -d./
+	#CCadmin -clean=all -d./
