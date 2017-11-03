@@ -173,6 +173,7 @@ V3 raycast(V3 Rd, V3 R0, OBJECT_LIST_STR *list)
 	double closest_t;
 	RAY_OUTPUT last;
 	RAY_OUTPUT curr;
+	RAY_OUTPUT closest_intersect;
 	V3 to_return;
 	V3 closest_color = v3_assign(1,0.9,0);;
 
@@ -201,11 +202,13 @@ V3 raycast(V3 Rd, V3 R0, OBJECT_LIST_STR *list)
 		if(i == 0)
 		{
 			closest_color = v3_assign(list[0].listOfObjects[i].properties[0].data[0],list[0].listOfObjects[i].properties[0].data[1],list[0].listOfObjects[i].properties[0].data[2]);
+			closest_intersect = curr;
 			last = curr;
 		}
 		else if(curr.t < last.t)
 		{
 			closest_color = v3_assign(list[0].listOfObjects[i].properties[0].data[0],list[0].listOfObjects[i].properties[0].data[1],list[0].listOfObjects[i].properties[0].data[2]);
+			closest_intersect = curr;
 			last = curr;
 		}
 		else
@@ -222,7 +225,9 @@ V3 raycast(V3 Rd, V3 R0, OBJECT_LIST_STR *list)
 		return closest_color;
 	}
 
+	//assign variables to handle vector ops
 	V3 final_color = v3_assign(0,0,0);
+	V3 light_pos = malloc(sizeof(double) * 3);
 
 	//For loop to go over all the lights
 	for(int i = 0; i < list[0].numObjects; i += 0)
@@ -231,8 +236,13 @@ V3 raycast(V3 Rd, V3 R0, OBJECT_LIST_STR *list)
 		{
 			//Assign lights to object
 			OBJECT_STR l = list[0].listOfObjects[i];
+			light_pos = l.
 
 			//assign the necessary variables
+			V3 ro2 = closest_intersect.intersection;
+			V3 rd2 = v3_subtract()
+
+			V3 hit = raycast_primitive(r02, rd2);
 		}
 		
 	}
