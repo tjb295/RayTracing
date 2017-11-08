@@ -167,19 +167,45 @@ void writeToP3(Pixel* pixmap, int pixwidth, int pixheight, char* output)
 int raycast_primitive(V3 ro2, V3 rd2, OBJECT_LIST_STR list)
 {
 	V3 intersection = malloc(sizeof(double) * 3);
-	int hit = 0;
+	double last_t;
+	double t;
+	double closest_t;
 
 	for (int =0; i < list[0].numObjects; i+= 1)
 	{
 		//check for objects if they intersect with anything previous to it
 		if(strcmp(list[0].listOfObjects[i].objectName, "sphere") == 0)
 		{
-			
+			t = sphere_intersect(list[0].listOfObjects[i], rd2, ro2);
 		}
+		else if(strcmp(list[0].listOfObjects[i].objectName, "plane") == 0)
+		{
+			t = plane_intersect(list[0].listOfObjects[i], rd2, ro2);
+		}
+
+	}
+
+	//if there is an intersection t or last_t will be something other than INFINITY
+	if(t == INFINITY)
+	{
+		return 0;
+	}
+	else
+	{
+		return 1;
 	}
 
 	
 	return intersection;
+}
+
+double distance(V3 light_pos, V3 intersection_pos)
+{
+	double x = light_pos[0] - intersection_pos[0];
+	double y = light_pos[1] - intersection_pos[1];
+	double z = light_pos[2] - intersection_pos[2];
+
+	return sqrt(x + y + z);
 }
 
 
@@ -263,7 +289,15 @@ V3 raycast(V3 Rd, V3 R0, OBJECT_LIST_STR *list)
 			V3 ro2 = closest_intersect.intersection;
 			v3_subtract(rd2, light_pos, ro2);
 
-			V3 hit = raycast_primitive(ro2, rd2, list);
+			//perform intersection test to see if we have an object blocking from light
+			int hit = raycast_primitive(ro2, rd2, list);
+			if(hit == 0) continue;
+
+			//find distance between light point and intersection point
+			double dl = distance(light_pos, closest_intersection.intersection);
+			
+
+		
 		}
 		
 	}
