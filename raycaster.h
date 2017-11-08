@@ -1,3 +1,4 @@
+
 #ifndef _RAYCASTER_H
 #define _RAYCASTER_H
 
@@ -10,7 +11,7 @@ typedef struct Pixel {
 } Pixel;
 
 typedef struct{
-	double* intersection;
+	V3 intersection;
 	double t;
 } RAY_OUTPUT;
 

@@ -10,12 +10,24 @@ RAY_OUTPUT sphere_intersect(OBJECT_STR object, V3 Rd, V3 R0)
 	double intersect;
 	RAY_OUTPUT to_return;
 	V3 t = malloc(sizeof(double ) * 3);
+	double r;
 	double x,y,z;
 
 	//define variables from Spheres data
-	V3 s_pos = v3_assign(object.properties[3].data[0], object.properties[3].data[1], object.properties[3].data[2]);
+	for(int i = 0; i < object.numProperties; i += 1)
+	{
+		if(strcmp(object.properties[i].property, "position") == 0)
+		{
+			V3 s_pos = v3_assign(object.properties[i].data[0], object.properties[i].data[1], object.properties[i].data[2]);
+		}
+		if(strcmp(object.properties.property, "radius") == 0)
+		{
+			r = object.properties[i].data[0];
+		}
+	}
+	
 
-	double r = object.properties[2].data[0];
+	
 	double r_sqr = r * r;
 
 	//a = x2 + y2 + z2
@@ -65,8 +77,19 @@ RAY_OUTPUT plane_intersect(OBJECT_STR object, V3 Rd, V3 R0)
 {
 	//begin plane intersection test!
 	//store variables such as the normal
-	V3 normal = v3_assign(object.properties[0].data[0],object.properties[0].data[1],object.properties[0].data[2]);
-	V3 p_pos  = v3_assign(object.properties[2].data[0],object.properties[2].data[1],object.properties[2].data[2]);
+	for(int i = 0; i < object.numProperties; i += 1)
+	{
+		if(strcmp(object.properties[i].property, "normal") == 0)
+		{
+			V3 normal = v3_assign(object.properties[i].data[0], object.properties[i].data[1], object.properties[i].data[2]);
+		}
+		if(strcmp(object.properties[i].property, "position") == 0)
+		{
+			V3 p_pos  = v3_assign(object.properties[i].data[0], object.properties[i].data[1], object.properties[i].data[2]);
+		}
+	}
+	
+	
 	V3 sub_v = malloc(sizeof(double) * 3);
 	RAY_OUTPUT to_return;
 
@@ -223,7 +246,8 @@ V3 raycast(V3 Rd, V3 R0, OBJECT_LIST_STR *list)
 	RAY_OUTPUT curr;
 	RAY_OUTPUT closest_intersect;
 	V3 to_return;
-	V3 closest_color = v3_assign(1,0.9,0);
+	V3 closest_spec_color;
+	V3 closest_diff_color;
 
 	//handle each object based on the type it is
 	for(int i = 0; i < list[0].numObjects; i += 1)
@@ -247,15 +271,25 @@ V3 raycast(V3 Rd, V3 R0, OBJECT_LIST_STR *list)
 			// }
 		}
 	
-		if(i == 0)
-		{
-			closest_color = v3_assign(list[0].listOfObjects[i].properties[0].data[0], list[0].listOfObjects[i].properties[0].data[1], list[0].listOfObjects[i].properties[0].data[2]);
+		if(curr.t == INFINITY)
+		{	
 			closest_intersect = curr;
 			last = curr;
 		}
 		else if(curr.t < last.t)
 		{
-			closest_color = v3_assign(list[0].listOfObjects[i].properties[0].data[0],list[0].listOfObjects[i].properties[0].data[1],list[0].listOfObjects[i].properties[0].data[2]);
+			for(int k = 0; k < list[0].listOfObjects[i].numProperties; k += 1)
+			{
+				if(strcmp(list[0].listOfObjects[i].properties[k].property, "specular_color") == 0)
+				{
+					closest_spec_color = v3_assign(list[0].listOfObjects[i].properties[k].data[0], list[0].listOfObjects[i].properties[k].data[1], list[0].listOfObjects[i].properties[k].data[2]);
+				}
+				if(strcmp(list[0].listOfObjects[i].properties[k].property, "diffuse_color") == 0)
+				{
+					closest_diff_color = v3_assign(list[0].listOfObjects[i].properties[k].data[0], list[0].listOfObjects[i].properties[k].data[1], list[0].listOfObjects[i].properties[k].data[2]);
+				}
+			}
+			
 			closest_intersect = curr;
 			last = curr;
 		}
@@ -279,6 +313,7 @@ V3 raycast(V3 Rd, V3 R0, OBJECT_LIST_STR *list)
 	V3 rd2 = malloc(sizeof(double) * 6);
 	V3 vo  = malloc(sizeof(double) * 6);
 	double a0, a1, a2;
+	double theta;
 
 	//For loop to go over all the lights
 	for(int i = 0; i < list[0].numObjects; i += 0)
@@ -292,7 +327,35 @@ V3 raycast(V3 Rd, V3 R0, OBJECT_LIST_STR *list)
 			OBJECT_STR l = list[0].listOfObjects[i];
 
 			//assign light position
-			light_pos = v3_assign(l.properties[5].data[0], l.properties[5].data[1], l.properties[5].data[2]);
+			for(int k = 0; k < l.numProperties; k += 0)
+			{
+				//assign theta property value
+				if(strcmp(l.properties[k].property, "theta") == 0)
+				{
+					theta = l.properties[k].data[0];
+				}
+
+				//assign position of the light
+				if(strcmp(l.properties[k].property, "position") == 0)
+				{
+					light_pos = v3_assign(l.properties[k].data[0], l.properties[k].data[1], l.properties[k].data[2]);
+				}
+
+				//bring in the radial a values
+				if(strcmp(l.properties[k].property,"radial-a2") == 0)
+				{
+					a2 = l.properties[k].data[0];
+				}
+				if(strcmp(l.properties[k].property, "radial-a1") == 0)
+				{
+					a1 = l.properties[k].data[0];
+				}
+				if(strcmp(l.properties[k].property, "radial-a0") == 0)
+				{
+					a0 = l.properties[k].data[0];
+				}
+			}
+			
 
 			//assign the necessary variables
 			V3 ro2 = closest_intersect.intersection;
@@ -307,12 +370,10 @@ V3 raycast(V3 Rd, V3 R0, OBJECT_LIST_STR *list)
 			double dl = distance(light_pos, closest_intersection.intersection);
 			v3_subtract(vo, closest_intersection.intersection, light_pos);
 
-			if(dl != INFINITY)
+			//if the theta is = to 0 then we have a point light
+			if(theta == 0)
 			{
-				a2 = l.properties[2].data[0];
-				a1 = l.properties[3].data[0];
-				a0 = l.properties[4].data[0];
-
+				if(dl != INFINITY)
 				f_rad = 1/(( (dl*dl) * a2) + a1*dl + a0);
 			}
 			if(alpha < theta)
@@ -339,8 +400,20 @@ int render(int n, int m, OBJECT_LIST_STR *list, char* output)
 	{
 		if(strcmp(list[0].listOfObjects[k].objectName, "camera") == 0)
 		{
-			width = list[0].listOfObjects[k].properties[0].data[0];
-			height = list[0].listOfObjects[k].properties[1].data[0];
+			//dynamically input width and height considering they can be in any order
+			for(int o = 0; o < list[0].listOfObjects[k].numValues; o += 1)
+			{
+				if(strcmp(list[0].listOfObjects[k].properties[o].property, "width") == 0)
+				{
+					width = list[0].listOfObjects[k].properties[o].data[0];
+				}
+				if(strcmp(list[0].listOfObjects[k].properties[o].property.data[0]) == 0)
+				{
+					height = list[0].listOfObjects[k].properties[1].data[0];
+				}
+			}
+			
+			
 		}
 	}
 	
