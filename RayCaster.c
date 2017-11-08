@@ -278,6 +278,7 @@ V3 raycast(V3 Rd, V3 R0, OBJECT_LIST_STR *list)
 	V3 light_pos;
 	V3 rd2 = malloc(sizeof(double) * 6);
 	V3 vo  = malloc(sizeof(double) * 6);
+	double a0, a1, a2;
 
 	//For loop to go over all the lights
 	for(int i = 0; i < list[0].numObjects; i += 0)
@@ -286,10 +287,12 @@ V3 raycast(V3 Rd, V3 R0, OBJECT_LIST_STR *list)
 		{
 			double f_rad = 1.0;
 			double f_ang = 1.0;
+
 			//Assign lights to object
 			OBJECT_STR l = list[0].listOfObjects[i];
+
 			//assign light position
-			//light_pos = v3_assign(l.properties[5].data[0], l.properties[5].data[1], l.properties[5].data[2]);
+			light_pos = v3_assign(l.properties[5].data[0], l.properties[5].data[1], l.properties[5].data[2]);
 
 			//assign the necessary variables
 			V3 ro2 = closest_intersect.intersection;
@@ -306,7 +309,15 @@ V3 raycast(V3 Rd, V3 R0, OBJECT_LIST_STR *list)
 
 			if(dl != INFINITY)
 			{
-				f_rad = 1/
+				a2 = l.properties[2].data[0];
+				a1 = l.properties[3].data[0];
+				a0 = l.properties[4].data[0];
+
+				f_rad = 1/(( (dl*dl) * a2) + a1*dl + a0);
+			}
+			if(alpha < theta)
+			{
+				f_ang = pow(v3_dot(vo, ))
 			}
 
 		
