@@ -204,6 +204,9 @@ double distance(V3 light_pos, V3 intersection_pos)
 	double x = light_pos[0] - intersection_pos[0];
 	double y = light_pos[1] - intersection_pos[1];
 	double z = light_pos[2] - intersection_pos[2];
+	x = x*x;
+	y = y*y;
+	z = z*z;
 
 	return sqrt(x + y + z);
 }
@@ -274,12 +277,15 @@ V3 raycast(V3 Rd, V3 R0, OBJECT_LIST_STR *list)
 	//V3 final_color = v3_assign(0,0,0);
 	V3 light_pos;
 	V3 rd2 = malloc(sizeof(double) * 6);
+	V3 vo  = malloc(sizeof(double) * 6);
 
 	//For loop to go over all the lights
 	for(int i = 0; i < list[0].numObjects; i += 0)
 	{
 		if(strcmp(list[0].listOfObjects[i].objectName, "light") == 0)
 		{
+			double f_rad = 1.0;
+			double f_ang = 1.0;
 			//Assign lights to object
 			OBJECT_STR l = list[0].listOfObjects[i];
 			//assign light position
@@ -289,13 +295,19 @@ V3 raycast(V3 Rd, V3 R0, OBJECT_LIST_STR *list)
 			V3 ro2 = closest_intersect.intersection;
 			v3_subtract(rd2, light_pos, ro2);
 
+
 			//perform intersection test to see if we have an object blocking from light
 			int hit = raycast_primitive(ro2, rd2, list);
 			if(hit == 0) continue;
 
 			//find distance between light point and intersection point
 			double dl = distance(light_pos, closest_intersection.intersection);
-			
+			v3_subtract(vo, closest_intersection.intersection, light_pos);
+
+			if(dl != INFINITY)
+			{
+				f_rad = 1/
+			}
 
 		
 		}
