@@ -91,13 +91,6 @@ RAY_OUTPUT plane_intersect(OBJECT_STR object, V3 Rd, V3 R0)
 	return to_return;
 }
 
-//function to return an intersection test for light ray, used for calulcating light forces
-V3 raycast_primitive(V3 ro2, V3 rd2)
-{
-	V3 intersection = malloc(sizeof(double) * 3);
-
-	return intersection;
-}
 
 void writeToP3(Pixel* pixmap, int pixwidth, int pixheight, char* output)
 {
@@ -170,6 +163,26 @@ void writeToP3(Pixel* pixmap, int pixwidth, int pixheight, char* output)
 
 }
 
+//function to return an intersection test for light ray, used for calulcating light forces
+int raycast_primitive(V3 ro2, V3 rd2, OBJECT_LIST_STR list)
+{
+	V3 intersection = malloc(sizeof(double) * 3);
+	int hit = 0;
+
+	for (int =0; i < list[0].numObjects; i+= 1)
+	{
+		//check for objects if they intersect with anything previous to it
+		if(strcmp(list[0].listOfObjects[i].objectName, "sphere") == 0)
+		{
+			
+		}
+	}
+
+	
+	return intersection;
+}
+
+
 V3 raycast(V3 Rd, V3 R0, OBJECT_LIST_STR *list)
 {
 	//keep track of the closest object
@@ -186,7 +199,6 @@ V3 raycast(V3 Rd, V3 R0, OBJECT_LIST_STR *list)
 	//handle each object based on the type it is
 	for(int i = 0; i < list[0].numObjects; i += 1)
 	{
-		printf("1: %lf 2: %lf, 3: %lf \n", list[0].listOfObjects[i].properties[0].data[0], list[0].listOfObjects[i].properties[0].data[1], list[0].listOfObjects[i].properties[0].data[2]);
 		//check for sphere object
 		if(strcmp(list[0].listOfObjects[i].objectName, "sphere") == 0)
 		{
@@ -251,7 +263,7 @@ V3 raycast(V3 Rd, V3 R0, OBJECT_LIST_STR *list)
 			V3 ro2 = closest_intersect.intersection;
 			v3_subtract(rd2, light_pos, ro2);
 
-			V3 hit = raycast_primitive(ro2, rd2);
+			V3 hit = raycast_primitive(ro2, rd2, list);
 		}
 		
 	}
