@@ -310,8 +310,11 @@ V3 raycast(V3 Rd, V3 R0, OBJECT_LIST_STR *list)
 	//assign variables to handle vector ops
 	//V3 final_color = v3_assign(0,0,0);
 	V3 light_pos;
+	V3 direction;
 	V3 rd2 = malloc(sizeof(double) * 6);
 	V3 vo  = malloc(sizeof(double) * 6);
+	V3 l_color;
+	double angular-a0;
 	double a0, a1, a2;
 	double theta;
 
@@ -354,6 +357,24 @@ V3 raycast(V3 Rd, V3 R0, OBJECT_LIST_STR *list)
 				{
 					a0 = l.properties[k].data[0];
 				}
+
+				//bring in the distance value
+				if(strcmp(l.properties[k].property, "direction") == 0)
+				{
+					distance = v3_assign(l.properties[k].data[0], l.properties[k].data[1], l.properties[k].data[2]);
+				}
+
+				//take in the angular exponent value
+				if(strcmp(l.properties[k].property, "angular-a0") == 0)
+				{
+					angular-a0 = l.properties[k].data[0];
+				}
+
+				//bring in the color value of the light
+				if(strcmp(l.properties[k].property, "color") == 0)
+				{
+					V3 l_color = v3_assign(l.properties[k].data[0], l.properties[k].data[1], l.properties[k].data[2]);
+				}
 			}
 			
 
@@ -373,8 +394,7 @@ V3 raycast(V3 Rd, V3 R0, OBJECT_LIST_STR *list)
 			//if the theta is = to 0 then we have a point light
 			if(theta == 0)
 			{
-				if(dl != INFINITY)
-				f_rad = 1/(( (dl*dl) * a2) + a1*dl + a0);
+				if(dl != INFINITY)	f_rad = 1/(( (dl*dl) * a2) + a1*dl + a0);
 			}
 			if(alpha < theta)
 			{
