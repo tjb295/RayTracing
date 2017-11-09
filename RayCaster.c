@@ -9,6 +9,7 @@ RAY_OUTPUT sphere_intersect(OBJECT_STR object, V3 Rd, V3 R0)
 {
 	double intersect;
 	RAY_OUTPUT to_return;
+	V3 s_pos;
 	V3 t = malloc(sizeof(double ) * 3);
 	double r;
 	double x,y,z;
@@ -18,9 +19,9 @@ RAY_OUTPUT sphere_intersect(OBJECT_STR object, V3 Rd, V3 R0)
 	{
 		if(strcmp(object.properties[i].property, "position") == 0)
 		{
-			V3 s_pos = v3_assign(object.properties[i].data[0], object.properties[i].data[1], object.properties[i].data[2]);
+			s_pos = v3_assign(object.properties[i].data[0], object.properties[i].data[1], object.properties[i].data[2]);
 		}
-		if(strcmp(object.properties.property, "radius") == 0)
+		if(strcmp(object.properties[i].property, "radius") == 0)
 		{
 			r = object.properties[i].data[0];
 		}
@@ -77,15 +78,17 @@ RAY_OUTPUT plane_intersect(OBJECT_STR object, V3 Rd, V3 R0)
 {
 	//begin plane intersection test!
 	//store variables such as the normal
+	V3 p_pos, normal;
+
 	for(int i = 0; i < object.numProperties; i += 1)
 	{
 		if(strcmp(object.properties[i].property, "normal") == 0)
 		{
-			V3 normal = v3_assign(object.properties[i].data[0], object.properties[i].data[1], object.properties[i].data[2]);
+			normal = v3_assign(object.properties[i].data[0], object.properties[i].data[1], object.properties[i].data[2]);
 		}
 		if(strcmp(object.properties[i].property, "position") == 0)
 		{
-			V3 p_pos  = v3_assign(object.properties[i].data[0], object.properties[i].data[1], object.properties[i].data[2]);
+			p_pos  = v3_assign(object.properties[i].data[0], object.properties[i].data[1], object.properties[i].data[2]);
 		}
 	}
 	
@@ -187,11 +190,11 @@ void writeToP3(Pixel* pixmap, int pixwidth, int pixheight, char* output)
 }
 
 //function to return an intersection test for light ray, used for calulcating light forces
-int raycast_primitive(V3 ro2, V3 rd2, OBJECT_LIST_STR list)
+int raycast_primitive(V3 ro2, V3 rd2, OBJECT_LIST_STR *list)
 {
 	RAY_OUTPUT curr;
 
-	for (int =0; i < list[0].numObjects; i+= 1)
+	for (int i = 0; i < list[0].numObjects; i+= 1)
 	{
 		//check for objects if they intersect with anything previous to it
 		if(strcmp(list[0].listOfObjects[i].objectName, "sphere") == 0)
@@ -215,8 +218,7 @@ int raycast_primitive(V3 ro2, V3 rd2, OBJECT_LIST_STR list)
 		return 1;
 	}
 
-	
-	return intersection;
+
 }
 
 double distance(V3 light_pos, V3 intersection_pos)
@@ -245,6 +247,7 @@ V3 raycast(V3 Rd, V3 R0, OBJECT_LIST_STR *list)
 	V3 to_return;
 	V3 closest_spec_color;
 	V3 closest_diff_color;
+	printf("Got here the raycast function \n");
 
 	//handle each object based on the type it is
 	for(int i = 0; i < list[0].numObjects; i += 1)
@@ -300,48 +303,50 @@ V3 raycast(V3 Rd, V3 R0, OBJECT_LIST_STR *list)
 	if(last.t == INFINITY)
 	{
 		//return background color if no hits
-		
-		return closest_color;
+		closest_spec_color = v3_assign(0,0,0);
+		closest_diff_color = v3_assign(0,0,0);
+
 	}
 
 
 	/////////////////////////////BEGIN LIGHT APPLICATION ///////////////////////////////////
 	V3 light_pos;
-	V3 Vl;
+	V3 Vl = malloc(sizeof(double) * 6);
 	V3 rd2 = malloc(sizeof(double) * 6);
 	V3 vo  = malloc(sizeof(double) * 6);
 	V3 l_color;
 	V3 color_to_return;
-	if(alpha < theta)
-	{
-		f_ang = pow(v3_dot(vo, Vl) angular-a0);
-	}
-	else
-	{
-		f_ang = 0;
-	}
-	double angular-a0;
+	double Vl_dist;
+	double angular_a0;
 	double a0, a1, a2;
-	double theta alpha;
+	double theta, alpha;
+	double f_ang, f_rad;
+	int hit;
 
+	printf("Got to the light attenuation stuff \n");
 	//For loop to go over all the lights
-	for(int i = 0; i < list[0].numObjects; i += 0)
+	for(int i = 0; i < list[0].numObjects; i += 1)
 	{
+		printf("Object name: %s \n", list[0].listOfObjects[i].objectName);
+
 		if(strcmp(list[0].listOfObjects[i].objectName, "light") == 0)
 		{
-			double f_rad = 1.0;
-			double f_ang = 1.0;
+			printf("Hello!!! \n");
+			f_rad = 1.0;
+			f_ang = 1.0;
 
 			//Assign lights to object
 			OBJECT_STR l = list[0].listOfObjects[i];
 
 			//assign light position
-			for(int k = 0; k < l.numProperties; k += 0)
+			for(int k = 0; k < l.numProperties; k += 1)
 			{
+				printf("%d number of properties \n", l.numProperties);
 				//assign theta property value
 				if(strcmp(l.properties[k].property, "theta") == 0)
 				{
 					theta = l.properties[k].data[0];
+					printf("%lf <-- Theta \n", theta);
 				}
 
 				//assign position of the light
@@ -354,10 +359,12 @@ V3 raycast(V3 Rd, V3 R0, OBJECT_LIST_STR *list)
 				if(strcmp(l.properties[k].property,"radial-a2") == 0)
 				{
 					a2 = l.properties[k].data[0];
+					printf("%lf <-- a2 \n", a2);
 				}
 				if(strcmp(l.properties[k].property, "radial-a1") == 0)
 				{
 					a1 = l.properties[k].data[0];
+					printf("%lf <-- a1 \n", a1);
 				}
 				if(strcmp(l.properties[k].property, "radial-a0") == 0)
 				{
@@ -373,29 +380,32 @@ V3 raycast(V3 Rd, V3 R0, OBJECT_LIST_STR *list)
 				//take in the angular exponent value
 				if(strcmp(l.properties[k].property, "angular-a0") == 0)
 				{
-					angular-a0 = l.properties[k].data[0];
+					angular_a0 = l.properties[k].data[0];
 				}
 
 				//bring in the color value of the light
 				if(strcmp(l.properties[k].property, "color") == 0)
 				{
 					V3 l_color = v3_assign(l.properties[k].data[0], l.properties[k].data[1], l.properties[k].data[2]);
+					printf("got the color boi \n");
 				}
 			}
 			
 
 			//assign the necessary variables
-			V3 ro2 = closest_intersect.intersection;
+			V3 ro2 = v3_assign(closest_intersect.intersection[0], closest_intersect.intersection[1], closest_intersect.intersection[2]);
 			v3_subtract(rd2, light_pos, ro2);
 
+			printf("Cast a ray primitive to see a hit \n");
 
 			//perform intersection test to see if we have an object blocking from light
-			int hit = raycast_primitive(ro2, rd2, list);
+			hit = raycast_primitive(ro2, rd2, list);
 			if(hit == 0) continue;
 
+
 			//find distance between light point and intersection point
-			double dl = distance(light_pos, closest_intersection.intersection);
-			v3_subtract(vo, closest_intersection.intersection, light_pos);
+			double dl = distance(light_pos, closest_intersect.intersection);
+			v3_subtract(vo, closest_intersect.intersection, light_pos);
 
 			//if the theta is = to 0 then we have a point light
 			if(theta == 0)
@@ -428,7 +438,7 @@ V3 raycast(V3 Rd, V3 R0, OBJECT_LIST_STR *list)
 
 				if(alpha < theta)
 				{
-					f_ang = pow(v3_dot(vo, Vl) angular-a0);
+					f_ang = pow(v3_dot(vo, Vl), angular_a0);
 				}
 				else
 				{
@@ -480,15 +490,15 @@ int render(int n, int m, OBJECT_LIST_STR *list, char* output)
 		if(strcmp(list[0].listOfObjects[k].objectName, "camera") == 0)
 		{
 			//dynamically input width and height considering they can be in any order
-			for(int o = 0; o < list[0].listOfObjects[k].numValues; o += 1)
+			for(int o = 0; o < list[0].listOfObjects[k].numProperties; o += 1)
 			{
 				if(strcmp(list[0].listOfObjects[k].properties[o].property, "width") == 0)
 				{
 					width = list[0].listOfObjects[k].properties[o].data[0];
 				}
-				if(strcmp(list[0].listOfObjects[k].properties[o].property.data[0]) == 0)
+				if(strcmp(list[0].listOfObjects[k].properties[o].data[0]) == 0)
 				{
-					height = list[0].listOfObjects[k].properties[1].data[0];
+					height = list[0].listOfObjects[k].properties[o].data[0];
 				}
 			}
 			

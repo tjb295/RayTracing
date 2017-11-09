@@ -1,0 +1,2 @@
+logrotate state -- version 2
+"/home/thomas/.cache/upstart/*.log" 2017-11-9-15:0:0

@@ -49,5 +49,10 @@ V3 v3_assign(double a, double b, double c)
 
 	return vector;
 }
+typedef struct{
+	V3 intersection;
+	double t;
+} RAY_OUTPUT;
+
 
 //#endif /*_3DMATH_H */

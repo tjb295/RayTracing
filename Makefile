@@ -17,7 +17,7 @@ NETLIB = -lsocket -lnsl
 
 ALLIBS =   -lm -ldl -m64 
 
-PROGRAMS = $(BIN_DIR)/TjbParser
+PROGRAMS = $(BIN_DIR)/Illumination
 
 OBJECTS =  main.o PropertyParser.o RayCaster.o
 
