@@ -417,12 +417,20 @@ V3 raycast(V3 Rd, V3 R0, OBJECT_LIST_STR *list)
 				//more pi values for extra accuracy with a double
 				alpha = alpha * 180.0 / 3.1415926535897932384626433832795028841;
 
+				if(alpha < theta)
+				{
+					f_ang = pow(v3_dot(vo, Vl) angular-a0);
+				}
+				else
+				{
+					f_ang = 0;
+				}
+
+				//calculate diffuse reflection
+				
+
 
 				
-			}
-			if(alpha < theta)
-			{
-				f_ang = pow(v3_dot(vo, ))
 			}
 
 		
