@@ -189,27 +189,24 @@ void writeToP3(Pixel* pixmap, int pixwidth, int pixheight, char* output)
 //function to return an intersection test for light ray, used for calulcating light forces
 int raycast_primitive(V3 ro2, V3 rd2, OBJECT_LIST_STR list)
 {
-	V3 intersection = malloc(sizeof(double) * 3);
-	double last_t;
-	double t;
-	double closest_t;
+	RAY_OUTPUT curr;
 
 	for (int =0; i < list[0].numObjects; i+= 1)
 	{
 		//check for objects if they intersect with anything previous to it
 		if(strcmp(list[0].listOfObjects[i].objectName, "sphere") == 0)
 		{
-			t = sphere_intersect(list[0].listOfObjects[i], rd2, ro2);
+			curr = sphere_intersect(list[0].listOfObjects[i], rd2, ro2);
 		}
 		else if(strcmp(list[0].listOfObjects[i].objectName, "plane") == 0)
 		{
-			t = plane_intersect(list[0].listOfObjects[i], rd2, ro2);
+			curr = plane_intersect(list[0].listOfObjects[i], rd2, ro2);
 		}
 
 	}
 
 	//if there is an intersection t or last_t will be something other than INFINITY
-	if(t == INFINITY)
+	if(curr.t == INFINITY)
 	{
 		return 0;
 	}
@@ -231,7 +228,7 @@ double distance(V3 light_pos, V3 intersection_pos)
 	y = y*y;
 	z = z*z;
 
-	return sqrt(x + y + z);
+	return fabs(sqrt(x + y + z));
 }
 
 
@@ -307,16 +304,16 @@ V3 raycast(V3 Rd, V3 R0, OBJECT_LIST_STR *list)
 		return closest_color;
 	}
 
-	//assign variables to handle vector ops
-	//V3 final_color = v3_assign(0,0,0);
+
+	/////////////////////////////BEGIN LIGHT APPLICATION ///////////////////////////////////
 	V3 light_pos;
-	V3 direction;
+	V3 Vl;
 	V3 rd2 = malloc(sizeof(double) * 6);
 	V3 vo  = malloc(sizeof(double) * 6);
 	V3 l_color;
 	double angular-a0;
 	double a0, a1, a2;
-	double theta;
+	double theta alpha;
 
 	//For loop to go over all the lights
 	for(int i = 0; i < list[0].numObjects; i += 0)
@@ -361,7 +358,7 @@ V3 raycast(V3 Rd, V3 R0, OBJECT_LIST_STR *list)
 				//bring in the distance value
 				if(strcmp(l.properties[k].property, "direction") == 0)
 				{
-					distance = v3_assign(l.properties[k].data[0], l.properties[k].data[1], l.properties[k].data[2]);
+					Vl = v3_assign(l.properties[k].data[0], l.properties[k].data[1], l.properties[k].data[2]);
 				}
 
 				//take in the angular exponent value
@@ -394,7 +391,34 @@ V3 raycast(V3 Rd, V3 R0, OBJECT_LIST_STR *list)
 			//if the theta is = to 0 then we have a point light
 			if(theta == 0)
 			{
-				if(dl != INFINITY)	f_rad = 1/(( (dl*dl) * a2) + a1*dl + a0);
+				if(dl != INFINITY)
+				{
+					f_rad = 1/(( (dl*dl) * a2) + a1*dl + a0);
+				}	
+			}
+
+
+			//conduct calculations to find alpha
+			if (theta != 0)
+			{
+				if(theta < 0)
+				{
+					fprintf(stderr, "Theta cannot be negative. \n");
+					exit(1);
+				}
+
+				//get disstance or magnitude of vector
+				Vl_dist = distance(light_pos, Vl);
+
+				//caluclate alpha using dl and vl
+				alpha = acos(Vl_dist/dl);
+
+				//convert alpha from radians to degrees
+				//more pi values for extra accuracy with a double
+				alpha = alpha * 180.0 / 3.1415926535897932384626433832795028841;
+
+
+				
 			}
 			if(alpha < theta)
 			{
