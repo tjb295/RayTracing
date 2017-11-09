@@ -311,6 +311,15 @@ V3 raycast(V3 Rd, V3 R0, OBJECT_LIST_STR *list)
 	V3 rd2 = malloc(sizeof(double) * 6);
 	V3 vo  = malloc(sizeof(double) * 6);
 	V3 l_color;
+	V3 color_to_return;
+	if(alpha < theta)
+	{
+		f_ang = pow(v3_dot(vo, Vl) angular-a0);
+	}
+	else
+	{
+		f_ang = 0;
+	}
 	double angular-a0;
 	double a0, a1, a2;
 	double theta alpha;
@@ -434,9 +443,13 @@ V3 raycast(V3 Rd, V3 R0, OBJECT_LIST_STR *list)
 				//calculate the spectral
 				if(closest_spec_color != NULL)
 				{
-					
+					//calculate if Vl is intersecting at that point
 				}
 
+				//add all these things up for the color to be returned
+				color_to_return = v3_assign(f_rad*f_ang * (closest_diff_color[0] + closest_spec_color[0]),
+											f_rad*f_ang * (closest_diff_color[1] + closest_spec_color[1]),
+											f_rad*f_ang * (closest_diff_color[2] + closest_spec_color[2]));
 
 
 				
@@ -446,8 +459,13 @@ V3 raycast(V3 Rd, V3 R0, OBJECT_LIST_STR *list)
 		}
 		
 	}
+	if(hit == 0)
+	{
+		//if no light return black
+		return v3_assign(0,0,0);
+	}
 
-	return closest_color;
+	return color_to_return;
 }
 
 int render(int n, int m, OBJECT_LIST_STR *list, char* output)
