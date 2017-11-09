@@ -426,8 +426,17 @@ V3 raycast(V3 Rd, V3 R0, OBJECT_LIST_STR *list)
 					f_ang = 0;
 				}
 
-				//calculate diffuse reflection
-				
+				//calculate diffuse reflection(which the reading says simply to multiply the color compontents of light and material colors)
+				closest_diff_color[0] = closest_diff_color[0] * l_color[0]; 
+				closest_diff_color[1] = closest_diff_color[1] * l_color[1];
+				closest_diff_color[2] = closest_diff_color[2] * l_color[2];
+
+				//calculate the spectral
+				if(closest_spec_color != NULL)
+				{
+					
+				}
+
 
 
 				
