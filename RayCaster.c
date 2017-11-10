@@ -97,6 +97,7 @@ RAY_OUTPUT plane_intersect(OBJECT_STR object, V3 Rd, V3 R0)
 	RAY_OUTPUT to_return;
 
 	v3_subtract(sub_v, R0, p_pos);
+
 	double top = v3_dot(sub_v, normal);
 	double bottom = v3_dot(Rd, normal);
 
@@ -193,7 +194,6 @@ void writeToP3(Pixel* pixmap, int pixwidth, int pixheight, char* output)
 int raycast_primitive(V3 ro2, V3 rd2, OBJECT_LIST_STR *list)
 {
 	RAY_OUTPUT curr;
-
 	for (int i = 0; i < list[0].numObjects; i+= 1)
 	{
 		//check for objects if they intersect with anything previous to it
@@ -207,7 +207,6 @@ int raycast_primitive(V3 ro2, V3 rd2, OBJECT_LIST_STR *list)
 		}
 
 	}
-
 	//if there is an intersection t or last_t will be something other than INFINITY
 	if(curr.t == INFINITY)
 	{
@@ -247,7 +246,6 @@ V3 raycast(V3 Rd, V3 R0, OBJECT_LIST_STR *list)
 	V3 to_return;
 	V3 closest_spec_color;
 	V3 closest_diff_color;
-	printf("Got here the raycast function \n");
 
 	//handle each object based on the type it is
 	for(int i = 0; i < list[0].numObjects; i += 1)
@@ -265,6 +263,8 @@ V3 raycast(V3 Rd, V3 R0, OBJECT_LIST_STR *list)
 			//perform intersection test
 			//printf("plane! \n");
 			curr = plane_intersect(list[0].listOfObjects[i], Rd, R0);
+			curr.intersection = v3_assign(0,0,0);
+			closest_spec_color = v3_assign(0,0,0);
 			// if(t != NULL)
 			// {
 			// 	printf("%lf z pos of plane is \n", t[2]);
@@ -300,7 +300,7 @@ V3 raycast(V3 Rd, V3 R0, OBJECT_LIST_STR *list)
 		
 	}
 
-	if(last.t == INFINITY)
+	if(closest_intersect.t == INFINITY)
 	{
 		//return background color if no hits
 		closest_spec_color = v3_assign(0,0,0);
@@ -323,15 +323,13 @@ V3 raycast(V3 Rd, V3 R0, OBJECT_LIST_STR *list)
 	double f_ang, f_rad;
 	int hit;
 
-	printf("Got to the light attenuation stuff \n");
 	//For loop to go over all the lights
 	for(int i = 0; i < list[0].numObjects; i += 1)
 	{
-		printf("Object name: %s \n", list[0].listOfObjects[i].objectName);
+		
 
 		if(strcmp(list[0].listOfObjects[i].objectName, "light") == 0)
 		{
-			printf("Hello!!! \n");
 			f_rad = 1.0;
 			f_ang = 1.0;
 
@@ -341,12 +339,11 @@ V3 raycast(V3 Rd, V3 R0, OBJECT_LIST_STR *list)
 			//assign light position
 			for(int k = 0; k < l.numProperties; k += 1)
 			{
-				printf("%d number of properties \n", l.numProperties);
+				
 				//assign theta property value
 				if(strcmp(l.properties[k].property, "theta") == 0)
 				{
 					theta = l.properties[k].data[0];
-					printf("%lf <-- Theta \n", theta);
 				}
 
 				//assign position of the light
@@ -359,12 +356,11 @@ V3 raycast(V3 Rd, V3 R0, OBJECT_LIST_STR *list)
 				if(strcmp(l.properties[k].property,"radial-a2") == 0)
 				{
 					a2 = l.properties[k].data[0];
-					printf("%lf <-- a2 \n", a2);
 				}
 				if(strcmp(l.properties[k].property, "radial-a1") == 0)
 				{
 					a1 = l.properties[k].data[0];
-					printf("%lf <-- a1 \n", a1);
+					
 				}
 				if(strcmp(l.properties[k].property, "radial-a0") == 0)
 				{
@@ -386,40 +382,45 @@ V3 raycast(V3 Rd, V3 R0, OBJECT_LIST_STR *list)
 				//bring in the color value of the light
 				if(strcmp(l.properties[k].property, "color") == 0)
 				{
-					V3 l_color = v3_assign(l.properties[k].data[0], l.properties[k].data[1], l.properties[k].data[2]);
-					printf("got the color boi \n");
+					l_color = v3_assign(l.properties[k].data[0], l.properties[k].data[1], l.properties[k].data[2]);
+					
 				}
 			}
+			if(closest_intersect.intersection == NULL)
+			{
+				continue;
+			}
 			
-
 			//assign the necessary variables
 			V3 ro2 = v3_assign(closest_intersect.intersection[0], closest_intersect.intersection[1], closest_intersect.intersection[2]);
 			v3_subtract(rd2, light_pos, ro2);
 
-			printf("Cast a ray primitive to see a hit \n");
 
+		
 			//perform intersection test to see if we have an object blocking from light
-			hit = raycast_primitive(ro2, rd2, list);
+			hit = raycast_primitive(light_pos, rd2, list);
 			if(hit == 0) continue;
-
 
 			//find distance between light point and intersection point
 			double dl = distance(light_pos, closest_intersect.intersection);
 			v3_subtract(vo, closest_intersect.intersection, light_pos);
 
+			
 			//if the theta is = to 0 then we have a point light
 			if(theta == 0)
 			{
 				if(dl != INFINITY)
 				{
 					f_rad = 1/(( (dl*dl) * a2) + a1*dl + a0);
+					
 				}	
 			}
 
-
+			
 			//conduct calculations to find alpha
 			if (theta != 0)
 			{
+				
 				if(theta < 0)
 				{
 					fprintf(stderr, "Theta cannot be negative. \n");
@@ -444,26 +445,17 @@ V3 raycast(V3 Rd, V3 R0, OBJECT_LIST_STR *list)
 				{
 					f_ang = 0;
 				}
-
-				//calculate diffuse reflection(which the reading says simply to multiply the color compontents of light and material colors)
-				closest_diff_color[0] = closest_diff_color[0] * l_color[0]; 
-				closest_diff_color[1] = closest_diff_color[1] * l_color[1];
-				closest_diff_color[2] = closest_diff_color[2] * l_color[2];
-
-				//calculate the spectral
-				if(closest_spec_color != NULL)
-				{
-					//calculate if Vl is intersecting at that point
-				}
-
-				//add all these things up for the color to be returned
-				color_to_return = v3_assign(f_rad*f_ang * (closest_diff_color[0] + closest_spec_color[0]),
-											f_rad*f_ang * (closest_diff_color[1] + closest_spec_color[1]),
-											f_rad*f_ang * (closest_diff_color[2] + closest_spec_color[2]));
-
-
 				
 			}
+
+			closest_diff_color[0] = closest_diff_color[0] * l_color[0]; 
+			closest_diff_color[1] = closest_diff_color[1] * l_color[1];
+			closest_diff_color[2] = closest_diff_color[2] * l_color[2];
+
+			//add all these things up for the color to be returned
+			color_to_return = v3_assign(f_rad*f_ang * (closest_diff_color[0] + closest_spec_color[0]),
+										f_rad*f_ang * (closest_diff_color[1] + closest_spec_color[1]),
+										f_rad*f_ang * (closest_diff_color[2] + closest_spec_color[2]));
 
 		
 		}

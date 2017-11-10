@@ -18,7 +18,7 @@ OBJECT_LIST_STR *getProperties(char *_filename)
 {
 
     // char *regPattern[] = {"[\\s]*[a-zA-z]+:[\\s]*\\[[0-9,\\.\\s]+]", "[\\s]*[a-zA-z]+:[\\s]*[0-9\\.]+"};
-    char *regPattern = "[a-zA-z]+:[ ]*\\[[-0-9,\\. ]+]|[a-zA-z]+:[ ]*[-0-9\\.]+";
+    char *regPattern = "[a-zA-z0-9\\-]+:[ ]*\\[[-0-9,\\. ]+]|[a-zA-z0-9\\-]+:[ ]*[-0-9\\.]+";
 
     regex_t regexComp;
     regmatch_t match;
