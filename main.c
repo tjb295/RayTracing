@@ -24,8 +24,6 @@ int main(int argc, char** argv)
     printf("Running parser with file %s\n",argv[3]);
     OBJECT_LIST_STR  *list = getProperties(argv[3]);
 
-    //print the properties to try to get them
-    printf("%d is the number of objects \n", list[0].numObjects);
 
 
     render(atoi(argv[1]), atoi(argv[2]), list, argv[4]);
