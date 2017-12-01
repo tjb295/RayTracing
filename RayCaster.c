@@ -466,7 +466,7 @@ V3 raycast(V3 Rd, V3 R0, OBJECT_LIST_STR *list)
 	if(hit == 0)
 	{
 		//if no light do raytracing
-		return shade()
+		return shade(list, ro2, Rd, 0);
 	}
 
 	return color_to_return;
@@ -474,7 +474,12 @@ V3 raycast(V3 Rd, V3 R0, OBJECT_LIST_STR *list)
 
 V3 shade(OBJECT_LIST_STR *list, V3 x, V3 Ur, int level)
 {
-	
+	int max_recusrion_level = 1000,
+	if(level > max_recusrion_level)
+	{
+		
+	}
+
 }
 
 int render(int n, int m, OBJECT_LIST_STR *list, char* output)
