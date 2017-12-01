@@ -67,6 +67,8 @@ RAY_OUTPUT sphere_intersect(OBJECT_STR object, V3 Rd, V3 R0)
 		to_return.intersection = v3_assign(x,y,z);
 		to_return.t - intersect;
 		//create the point to be returned
+
+		
 		
 
 		return to_return;
@@ -463,11 +465,16 @@ V3 raycast(V3 Rd, V3 R0, OBJECT_LIST_STR *list)
 	}
 	if(hit == 0)
 	{
-		//if no light return black
-		return v3_assign(0,0,0);
+		//if no light do raytracing
+		return shade()
 	}
 
 	return color_to_return;
+}
+
+V3 shade(OBJECT_LIST_STR *list, V3 x, V3 Ur, int level)
+{
+	
 }
 
 int render(int n, int m, OBJECT_LIST_STR *list, char* output)
