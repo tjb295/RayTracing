@@ -475,8 +475,13 @@ V3 raycast(V3 Rd, V3 R0, OBJECT_LIST_STR *list)
 V3 shade(OBJECT_LIST_STR *list, V3 x, V3 Ur, int level)
 {
 	int max_recusrion_level = 1000,
-	if(level > max_recusrion_level)
+	if(level > max_recursion_level)
 	{
+		return v3_assign(0,0,0);
+	}
+	else
+	{
+		//reflection vctor
 		
 	}
 
